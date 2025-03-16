@@ -1,0 +1,1 @@
+web: python blockchain_server.py
