@@ -197,6 +197,15 @@ def verify():
         return jsonify({"message": msg})
     else:
         return jsonify({"error": msg}), 400
+    
+@app.route("/reset", methods=["POST"])
+def reset_blockchain():
+    """
+    Resets the blockchain by clearing all blocks and creating a new genesis block.
+    """
+    blockchain.chain = [blockchain.create_genesis_block()]
+    blockchain.save_chain()
+    return jsonify({"message": "Blockchain reset successfully!", "chain": [b.to_dict() for b in blockchain.chain]})
 
 # ------------------------------
 # Main Execution
