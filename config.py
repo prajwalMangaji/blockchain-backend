@@ -10,8 +10,8 @@ BLOCKCHAIN_VERSION = "1.0"
 RESET_BLOCKCHAIN = False
 
 # Flask Configuration
-FLASK_ENV = os.getenv("FLASK_ENV", "development")
-DEBUG = FLASK_ENV == "development"
+FLASK_DEBUG = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+FLASK_ENV = os.getenv("FLASK_ENV", "production")
 HOST = "0.0.0.0"
 PORT = int(os.getenv("PORT", 8080))
 

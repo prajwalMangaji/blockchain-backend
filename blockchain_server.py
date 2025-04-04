@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from filelock import FileLock
 from config import (
     BLOCKCHAIN_FILE, BLOCKCHAIN_VERSION, RESET_BLOCKCHAIN,
-    DEBUG, HOST, PORT, ALLOWED_ORIGINS,
+    FLASK_DEBUG, FLASK_ENV, HOST, PORT, ALLOWED_ORIGINS,
     REQUIRED_THREAT_FIELDS, VALID_THREAT_TYPES
 )
 
@@ -259,6 +259,11 @@ def validate_threat_data(data):
         
     return True, ""
 
+@app.route("/", methods=["GET"])
+def health_check():
+    """Health check endpoint."""
+    return jsonify({"status": "healthy", "version": BLOCKCHAIN_VERSION})
+
 @app.route("/chain", methods=["GET"])
 def get_chain():
     """Get the current state of the blockchain."""
@@ -328,4 +333,8 @@ def reset_blockchain():
 # ------------------------------
 
 if __name__ == "__main__":
-    app.run(host=HOST, port=PORT, debug=DEBUG)
+    try:
+        app.run(host=HOST, port=PORT, debug=FLASK_DEBUG)
+    except Exception as e:
+        print(f"Error starting server: {str(e)}")
+        raise

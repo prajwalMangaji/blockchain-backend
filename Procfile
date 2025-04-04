@@ -1,1 +1,1 @@
-web: gunicorn blockchain_server:app
+web: FLASK_ENV=production FLASK_DEBUG=False gunicorn blockchain_server:app
