@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import hashlib
 import json
 import os
@@ -231,7 +233,21 @@ class Blockchain:
 # ------------------------------
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ALLOWED_ORIGINS}})
+CORS(app, resources={
+    r"/*": {
+        "origins": ALLOWED_ORIGINS,
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
+
+# Rate limiting setup
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+
 blockchain = Blockchain()
 
 def validate_threat_data(data):
@@ -265,6 +281,7 @@ def health_check():
     return jsonify({"status": "healthy", "version": BLOCKCHAIN_VERSION})
 
 @app.route("/chain", methods=["GET"])
+@limiter.limit("10 per second")  # Rate limit for chain endpoint
 def get_chain():
     """Get the current state of the blockchain."""
     return jsonify({
