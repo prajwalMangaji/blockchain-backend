@@ -1,1 +1,1 @@
-web: gunicorn blockchain_server:app
+web: python blockchain_server.py
