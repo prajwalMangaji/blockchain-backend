@@ -55,6 +55,19 @@
             "hash": "f594741c65ed6015fde913a12ecd3d25cf11f99004998624c7a5c43abba782a2",
             "previous_hash": "0f7c9d8e94deccbc07c341aa78f199cee7c776a2579235e38b563c92b4d3eb43",
             "timestamp": "2025-04-04 08:47:44"
+        },
+        {
+            "data": {
+                "details": {
+                    "ip": "192.168.1.10",
+                    "message": "Unusual login activity"
+                },
+                "type": "suspicious_login"
+            },
+            "data_hash": "d79d4aa5e1fc678d86dd9c39290fd058891cfe313ab207e875240241eb2bed16",
+            "hash": "a38928c4e658b90909be6484931f25b8d031be29cd6dc4c64d694beffb550e2f",
+            "previous_hash": "f594741c65ed6015fde913a12ecd3d25cf11f99004998624c7a5c43abba782a2",
+            "timestamp": "2025-04-04 11:21:34"
         }
     ],
     "version": "1.0"
