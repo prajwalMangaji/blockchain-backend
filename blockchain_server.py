@@ -215,4 +215,4 @@ if __name__ == "__main__":
     # For demo, you can add a test threat on startup (optional)
     # blockchain.add_block({"type": "test_threat", "details": {"ip": "1.2.3.4", "message": "Demo threat"}})
     
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)

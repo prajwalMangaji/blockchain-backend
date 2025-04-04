@@ -6,19 +6,9 @@
                 "type": "genesis"
             },
             "data_hash": "42ae1fa77dbaccb1c304a542e662c418556ea433147c38865626dd4e13bcc9be",
-            "hash": "29455a0da85c2037d0c6fbfbac5e9552121579d37b16c5c2d5d818087d2f9730",
+            "hash": "cbd0cb088276cd507eae34c9e7a63decf9c07acea18bb66ae745def82f8b182e",
             "previous_hash": "0",
-            "timestamp": "2025-03-15 17:12:08"
-        },
-        {
-            "data": {
-                "severity": "High",
-                "threat": "Demo Attack"
-            },
-            "data_hash": "64865c367b68e37a4b73bf7cfff551799f6b9532afebce80da2ff543b672b306",
-            "hash": "4711256be06ce53a633729cb4d17cc520b97b39ab20f761e60737ef395a29e20",
-            "previous_hash": "29455a0da85c2037d0c6fbfbac5e9552121579d37b16c5c2d5d818087d2f9730",
-            "timestamp": "2025-03-15 17:12:44"
+            "timestamp": "2025-04-02 12:13:25"
         }
     ],
     "version": "1.0"
