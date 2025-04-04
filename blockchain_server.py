@@ -1,29 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 import hashlib
 import json
 import os
 from datetime import datetime, timezone
 from filelock import FileLock
-from config import (
-    BLOCKCHAIN_FILE, BLOCKCHAIN_VERSION, RESET_BLOCKCHAIN,
-    FLASK_DEBUG, FLASK_ENV, HOST, PORT, ALLOWED_ORIGINS,
-    REQUIRED_THREAT_FIELDS, VALID_THREAT_TYPES
-)
 
 # ------------------------------
 # Blockchain Code
 # ------------------------------
-
-import hashlib
-import json
-from datetime import datetime, timezone
-
-import hashlib
-import json
-from datetime import datetime, timezone
 
 class Block:
     """
@@ -74,9 +59,9 @@ class Blockchain:
     Manages the blockchain operations including block creation, validation, and persistence.
     """
     def __init__(self):
-        self.lock_file = f"{BLOCKCHAIN_FILE}.lock"
-        if RESET_BLOCKCHAIN and os.path.exists(BLOCKCHAIN_FILE):
-            os.remove(BLOCKCHAIN_FILE)
+        self.lock_file = "blockchain.json.lock"
+        if os.path.exists("blockchain.json"):
+            os.remove("blockchain.json")
 
         self.chain = self.load_chain()
         if not self.chain:
@@ -111,10 +96,10 @@ class Blockchain:
         """Save the blockchain to disk with file locking."""
         with FileLock(self.lock_file):
             data = {
-                "version": BLOCKCHAIN_VERSION,
+                "version": "1.0",
                 "chain": [b.to_dict() for b in self.chain]
             }
-            with open(BLOCKCHAIN_FILE, "w") as f:
+            with open("blockchain.json", "w") as f:
                 json.dump(data, f, indent=4, sort_keys=True)
 
     def load_chain(self):
@@ -126,10 +111,10 @@ class Blockchain:
         """
         try:
             with FileLock(self.lock_file):
-                if not os.path.exists(BLOCKCHAIN_FILE):
+                if not os.path.exists("blockchain.json"):
                     return None
 
-                with open(BLOCKCHAIN_FILE, "r") as f:
+                with open("blockchain.json", "r") as f:
                     file_data = json.load(f)
 
                 if isinstance(file_data, list):
@@ -137,7 +122,7 @@ class Blockchain:
                     return None
 
                 file_version = file_data.get("version", "0.0")
-                if file_version != BLOCKCHAIN_VERSION:
+                if file_version != "1.0":
                     print(f"Error: Incompatible version {file_version}. Resetting blockchain.")
                     return None
 
@@ -181,7 +166,7 @@ class Blockchain:
         """
         try:
             with FileLock(self.lock_file):
-                with open(BLOCKCHAIN_FILE, "r") as file:
+                with open("blockchain.json", "r") as file:
                     blockchain_data = json.load(file)
                     blockchain = blockchain_data["chain"]
 
@@ -233,20 +218,7 @@ class Blockchain:
 # ------------------------------
 
 app = Flask(__name__)
-CORS(app, resources={
-    r"/*": {
-        "origins": ALLOWED_ORIGINS,
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
-    }
-})
-
-# Rate limiting setup
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
-)
+CORS(app)
 
 blockchain = Blockchain()
 
@@ -263,25 +235,21 @@ def validate_threat_data(data):
     if not isinstance(data, dict):
         return False, "Threat data must be a JSON object"
         
-    for field in REQUIRED_THREAT_FIELDS:
+    required_fields = ["type", "details"]
+    for field in required_fields:
         if field not in data:
             return False, f"Missing required field: {field}"
             
-    if data["type"] not in VALID_THREAT_TYPES:
-        return False, f"Invalid threat type. Must be one of: {', '.join(VALID_THREAT_TYPES)}"
+    valid_types = ["suspicious_login", "malware_detected", "network_breach"]
+    if data["type"] not in valid_types:
+        return False, f"Invalid threat type. Must be one of: {', '.join(valid_types)}"
         
     if not isinstance(data["details"], dict):
         return False, "Details must be a JSON object"
         
     return True, ""
 
-@app.route("/", methods=["GET"])
-def health_check():
-    """Health check endpoint."""
-    return jsonify({"status": "healthy", "version": BLOCKCHAIN_VERSION})
-
 @app.route("/chain", methods=["GET"])
-@limiter.limit("10 per second")  # Rate limit for chain endpoint
 def get_chain():
     """Get the current state of the blockchain."""
     return jsonify({
@@ -350,8 +318,4 @@ def reset_blockchain():
 # ------------------------------
 
 if __name__ == "__main__":
-    try:
-        app.run(host=HOST, port=PORT, debug=FLASK_DEBUG)
-    except Exception as e:
-        print(f"Error starting server: {str(e)}")
-        raise
+    app.run(host="0.0.0.0", port=8080, debug=False)
